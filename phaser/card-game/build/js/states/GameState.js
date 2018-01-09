@@ -21,7 +21,8 @@ App.GameState = {
     //   { frame: 51, pattern: 'DK' }
     // ];
 
-    this.deck = [10,11,12,13,24,25,36,37,38,49,50,51];
+    //this.deck = [10,11,12,13,24,25,36,37,38,49,50,51];
+    this.deck = [10,12,24,36,38,50,10,12,24,36,38,50];
   },
   create: function() {
     this.cards = this.add.group();
@@ -79,35 +80,45 @@ App.GameState = {
     }
   },
   selectCard: function(card) {
-    console.log('selectCard', 'begin');
-
     card.data.flipped = true;
-    this.selectedCards.push(card);
 
-    if(this.selectedCards.length == 2) {
-      setTimeout(this.checkPattern, 500);
-    }
+    // this.selectedCards.push(card);
+    //
+    // if(this.selectedCards.length == 2) {
+    //   setTimeout(this.checkPattern, 500);
+    // }
 
-    console.log('card.data', card.data);
-
-    console.log('selectCard', 'end');
+    //setTimeout(this.checkPattern, 500);
+    this.checkPattern();
   },
   checkPattern: function() {
-    console.log('checkPattern', 'begin');
+    var selectedCards = [];
 
-    if(this.matchPattern) {
-      console.log('checkPattern', 'match');
+    this.cards.forEachAlive(function(card) {
+      if(card.data.flipped) {
+        selectedCards.push(card);
+      }
+    }, this);
+
+    if(selectedCards.length !== 2) return;
+
+    if(this.matchPattern(selectedCards)) {
+      this.cards.forEachAlive(function(card) {
+        if(card.data.flipped) {
+          card.kill();
+        };
+      }, this);
     }
     else {
-      console.log('checkPattern', 'no match');
+      this.cards.forEachAlive(function(card) {
+        card.data.flipped = false;
+      }, this);
     }
-
-    //TODO this.selectedCards is undefined
-    //this.selectedCards.length = 0;
-
-    console.log('checkPattern', 'end');
   },
-  matchPattern: function() {
-    return (this.selectedCards[0].data.pattern == this.selectedCards[1].data.pattern);
+  matchPattern: function(selectedCards) {
+    console.log('selectedCards[0].data.pattern', selectedCards[0].data.pattern);
+    console.log('selectedCards[1].data.pattern', selectedCards[1].data.pattern);
+
+    return (selectedCards[0].data.pattern === selectedCards[1].data.pattern);
   }
 };
