@@ -7,6 +7,9 @@ App.GameState = {
     this.CARD_SPACING = 10;
     this.FLIP_SPEED = 200;
     this.FLIP_ZOOM = 1.2;
+    this.FRAME_DEFAULT = 52;
+    this.GRID_ROWS = 4;
+    this.GRID_COLUMNS = 3;
 
     this.deck = [10,12,24,36,38,50,10,12,24,36,38,50];
   },
@@ -43,29 +46,49 @@ App.GameState = {
   deal: function() {
     var count, i, j, card;
 
-    count = 0;
-    for(i = 0; i < 4; i++) {
-      for(j = 0; j < 3; j++) {
-        card = this.add.sprite(
-          this.CARD_SPACING + i * (this.CARD_WIDTH + this.CARD_SPACING),
-          this.CARD_SPACING + j * (this.CARD_HEIGHT + this.CARD_SPACING),
-          'deck'
-        );
+    // count = 0;
+    // for(i = 0; i < this.GRID_ROWS; i++) {
+    //   for(j = 0; j < this.GRID_COLUMNS; j++) {
+    //     card = this.add.sprite(
+    //       this.CARD_SPACING + i * (this.CARD_WIDTH + this.CARD_SPACING),
+    //       this.CARD_SPACING + j * (this.CARD_HEIGHT + this.CARD_SPACING),
+    //       'deck'
+    //     );
+    //
+    //     card.anchor.set(0.5);
+    //
+    //     card.frame = this.FRAME_DEFAULT; //this.deck[count];
+    //     card.inputEnabled = true;
+    //     card.events.onInputDown.add(this.selectCard, this);
+    //
+    //     card.data.flipped = false;
+    //     card.data.isFlipping = false;
+    //     card.data.pattern = this.deck[count];
+    //
+    //     this.cards.add(card);
+    //
+    //     count++;
+    //   }
+    // }
 
-        card.anchor.set(0.5);
+    for(i =0; i < this.deck.length; i++) {
+      card = this.add.sprite(
+        (this.CARD_WIDTH + this.CARD_SPACING) * (i % 4) + this.CARD_SPACING + this.CARD_WIDTH / 2,
+        (this.CARD_HEIGHT + this.CARD_SPACING) * Math.floor(i / 4) + this.CARD_SPACING + this.CARD_HEIGHT / 2,
+        'deck'
+      );
 
-        card.frame = 52; //this.deck[count];
-        card.inputEnabled = true;
-        card.events.onInputDown.add(this.selectCard, this);
+      card.anchor.set(0.5);
 
-        card.data.flipped = false;
-        card.data.isFlipping = false;
-        card.data.pattern = this.deck[count];
+      card.frame = this.FRAME_DEFAULT;
+      card.inputEnabled = true;
+      card.events.onInputDown.add(this.selectCard, this);
 
-        this.cards.add(card);
+      card.data.flipped = false;
+      card.data.isFlipping = false;
+      card.data.pattern = this.deck[i];
 
-        count++;
-      }
+      this.cards.add(card);
     }
   },
   selectCard: function(card) {
@@ -73,10 +96,10 @@ App.GameState = {
 
     if(this.selectedCard.data.flipped || this.selectedCard.data.isFlipping) return;
 
-    this.selectedCard.data.flipped = true;
-    this.selectedCard.data.isFlipping = true;
+    //this.selectedCard.data.flipped = true;
+    //this.selectedCard.data.isFlipping = true;
 
-    this.selectedCards.push(this.selectedCard);
+    //this.selectedCards.push(this.selectedCard);
 
     // first tween: we raise and flip the card
     this.flipTween = this.game.add.tween(this.selectedCard.scale).to({
@@ -86,7 +109,6 @@ App.GameState = {
 
     // once the card is flipped, we change its frame and call the second tween
     this.flipTween.onComplete.add(function(){
-        console.log('flipTween.onComplete', this.selectedCard.frame);
         this.selectedCard.frame = this.selectedCard.data.pattern;
         this.backFlipTween.start();
     }, this);
@@ -100,13 +122,16 @@ App.GameState = {
     // once the card has been placed down on the table, we can flip it again
     this.backFlipTween.onComplete.add(function(){
         this.selectedCard.isFlipping = false;
+        this.selectedCard.flipped = true;
+
+        this.selectedCards.push(this.selectedCard);
+
+        if(this.selectedCards.length == 2) {
+          this.game.time.events.add(Phaser.Timer.SECOND * 1, this.checkPattern, this);
+        }
     }, this);
 
     this.flipTween.start();
-
-    if(this.selectedCards.length == 2) {
-      this.game.time.events.add(Phaser.Timer.SECOND * 1, this.checkPattern, this);
-    }
   },
   checkPattern: function() {
     if(this.matchPattern(this.selectedCards)) {
