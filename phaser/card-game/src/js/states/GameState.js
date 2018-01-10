@@ -5,23 +5,9 @@ App.GameState = {
     this.CARD_WIDTH = 80;
     this.CARD_HEIGHT = 120;
     this.CARD_SPACING = 10;
+    this.FLIP_SPEED = 200;
+    this.FLIP_ZOOM = 1.2;
 
-    // this.deck = [
-    //   { frame: 10, pattern: 'SJ' },
-    //   { frame: 11, pattern: 'SQ' },
-    //   { frame: 12, pattern: 'SK' },
-    //   { frame: 23, pattern: 'HJ' },
-    //   { frame: 24, pattern: 'HQ' },
-    //   { frame: 25, pattern: 'HK' },
-    //   { frame: 36, pattern: 'CJ' },
-    //   { frame: 37, pattern: 'CQ' },
-    //   { frame: 38, pattern: 'CK' },
-    //   { frame: 49, pattern: 'DJ' },
-    //   { frame: 50, pattern: 'DQ' },
-    //   { frame: 51, pattern: 'DK' }
-    // ];
-
-    //this.deck = [10,11,12,13,24,25,36,37,38,49,50,51];
     this.deck = [10,12,24,36,38,50,10,12,24,36,38,50];
   },
   create: function() {
@@ -66,11 +52,14 @@ App.GameState = {
           'deck'
         );
 
-        card.frame = this.deck[count];
+        card.anchor.set(0.5);
+
+        card.frame = 52; //this.deck[count];
         card.inputEnabled = true;
         card.events.onInputDown.add(this.selectCard, this);
 
         card.data.flipped = false;
+        card.data.isFlipping = false;
         card.data.pattern = this.deck[count];
 
         this.cards.add(card);
@@ -80,30 +69,46 @@ App.GameState = {
     }
   },
   selectCard: function(card) {
-    card.data.flipped = true;
+    this.selectedCard = card;
 
-    // this.selectedCards.push(card);
-    //
-    // if(this.selectedCards.length == 2) {
-    //   setTimeout(this.checkPattern, 500);
-    // }
+    if(this.selectedCard.data.flipped || this.selectedCard.data.isFlipping) return;
 
-    //setTimeout(this.checkPattern, 500);
+    this.selectedCard.data.flipped = true;
+    this.selectedCard.data.isFlipping = true;
 
-    //this.checkPattern();
+    this.selectedCards.push(this.selectedCard);
 
-    //this.game.time.events.add(Phaser.Timer.SECOND * 1, this.checkPattern, this);
+    // first tween: we raise and flip the card
+    this.flipTween = this.game.add.tween(this.selectedCard.scale).to({
+      x: 0,
+      y: this.FLIP_ZOOM
+    }, this.FLIP_SPEED / 2, Phaser.Easing.Linear.None);
 
-    this.selectedCards.push(card);
+    // once the card is flipped, we change its frame and call the second tween
+    this.flipTween.onComplete.add(function(){
+        console.log('flipTween.onComplete', this.selectedCard.frame);
+        this.selectedCard.frame = this.selectedCard.data.pattern;
+        this.backFlipTween.start();
+    }, this);
+
+    // second tween: we complete the flip and lower the card
+    this.backFlipTween = this.game.add.tween(this.selectedCard.scale).to({
+        x: 1,
+        y: 1
+    }, this.FLIP_SPEED / 2, Phaser.Easing.Linear.None);
+
+    // once the card has been placed down on the table, we can flip it again
+    this.backFlipTween.onComplete.add(function(){
+        this.selectedCard.isFlipping = false;
+    }, this);
+
+    this.flipTween.start();
 
     if(this.selectedCards.length == 2) {
       this.game.time.events.add(Phaser.Timer.SECOND * 1, this.checkPattern, this);
     }
   },
   checkPattern: function() {
-    console.log('checkPattern', 'start');
-    console.log('this.selectedCards', this.selectedCards);
-
     if(this.matchPattern(this.selectedCards)) {
       // TODO remove cards
       this.selectedCards.forEach(function(card){
@@ -146,9 +151,6 @@ App.GameState = {
   //   }
   // },
   matchPattern: function(selectedCards) {
-    console.log('selectedCards[0].data.pattern', selectedCards[0].data.pattern);
-    console.log('selectedCards[1].data.pattern', selectedCards[1].data.pattern);
-
     return (selectedCards[0].data.pattern === selectedCards[1].data.pattern);
   }
 };
