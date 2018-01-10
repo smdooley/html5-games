@@ -89,32 +89,62 @@ App.GameState = {
     // }
 
     //setTimeout(this.checkPattern, 500);
-    this.checkPattern();
+
+    //this.checkPattern();
+
+    //this.game.time.events.add(Phaser.Timer.SECOND * 1, this.checkPattern, this);
+
+    this.selectedCards.push(card);
+
+    if(this.selectedCards.length == 2) {
+      this.game.time.events.add(Phaser.Timer.SECOND * 1, this.checkPattern, this);
+    }
   },
   checkPattern: function() {
-    var selectedCards = [];
+    console.log('checkPattern', 'start');
+    console.log('this.selectedCards', this.selectedCards);
 
-    this.cards.forEachAlive(function(card) {
-      if(card.data.flipped) {
-        selectedCards.push(card);
-      }
-    }, this);
-
-    if(selectedCards.length !== 2) return;
-
-    if(this.matchPattern(selectedCards)) {
-      this.cards.forEachAlive(function(card) {
-        if(card.data.flipped) {
-          card.kill();
-        };
+    if(this.matchPattern(this.selectedCards)) {
+      // TODO remove cards
+      this.selectedCards.forEach(function(card){
+        card.kill();
       }, this);
+
+      // TODO increment score
     }
     else {
       this.cards.forEachAlive(function(card) {
         card.data.flipped = false;
       }, this);
     }
+
+    // TODO clear selected cards
+    this.selectedCards.length = 0;
   },
+  // checkPattern: function() {
+  //   var selectedCards = [];
+  //
+  //   this.cards.forEachAlive(function(card) {
+  //     if(card.data.flipped) {
+  //       selectedCards.push(card);
+  //     }
+  //   }, this);
+  //
+  //   if(selectedCards.length !== 2) return;
+  //
+  //   if(this.matchPattern(selectedCards)) {
+  //     this.cards.forEachAlive(function(card) {
+  //       if(card.data.flipped) {
+  //         card.kill();
+  //       };
+  //     }, this);
+  //   }
+  //   else {
+  //     this.cards.forEachAlive(function(card) {
+  //       card.data.flipped = false;
+  //     }, this);
+  //   }
+  // },
   matchPattern: function(selectedCards) {
     console.log('selectedCards[0].data.pattern', selectedCards[0].data.pattern);
     console.log('selectedCards[1].data.pattern', selectedCards[1].data.pattern);
