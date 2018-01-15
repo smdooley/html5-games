@@ -117,6 +117,7 @@ App.GameState = {
       }, this);
 
       // TODO increment score
+      this.gameOver();
     }
     else {
       // turn selected cards face down
@@ -155,5 +156,10 @@ App.GameState = {
   },
   matchPattern: function(selectedCards) {
     return (selectedCards[0].data.pattern === selectedCards[1].data.pattern);
+  },
+  gameOver: function() {
+    if(this.cards.countLiving() === 0) {
+      console.log('Congratulations');
+    }
   }
 };
