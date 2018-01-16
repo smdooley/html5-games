@@ -12,6 +12,8 @@ App.GameState = {
     this.GRID_COLUMNS = 3;
 
     this.deck = [10,12,24,36,38,50,10,12,24,36,38,50];
+
+    this.score = 0;
   },
   create: function() {
     this.cards = this.add.group();
@@ -120,6 +122,9 @@ App.GameState = {
         card.kill();
       }, this);
 
+      //increment score
+      this.score++;
+
       // check if all cards have been removed
       this.gameOver();
     }
@@ -164,7 +169,7 @@ App.GameState = {
   },
   gameOver: function() {
     if(this.cards.countLiving() === 0) {
-      console.log('Congratulations');
+      this.game.state.start('CompleteState', true, false, this.score);
     }
   }
 };

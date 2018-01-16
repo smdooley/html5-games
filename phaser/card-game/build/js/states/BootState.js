@@ -18,6 +18,6 @@ App.BootState = {
 
   },
   create: function() {
-    this.state.start('PreloadState');
+    this.game.state.start('PreloadState');
   }
 };
