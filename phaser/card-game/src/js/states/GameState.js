@@ -69,8 +69,9 @@ App.GameState = {
   selectCard: function(card) {
     this.selectedCard = card;
 
-    if(this.selectedCard.data.flipped || this.selectedCard.data.isFlipping) return;
+    if(this.uiBlocked || this.selectedCard.data.flipped || this.selectedCard.data.isFlipping) return;
 
+    this.uiBlocked = true;
     this.selectedCard.data.isFlipping = true;
 
     // turn selected card face up
@@ -103,6 +104,9 @@ App.GameState = {
         if(this.selectedCards.length == 2) {
           this.game.time.events.add(Phaser.Timer.SECOND * 1, this.checkPattern, this);
         }
+        else {
+          this.uiBlocked = false;
+        }
     }, this);
 
     flipTween.start();
@@ -116,7 +120,7 @@ App.GameState = {
         card.kill();
       }, this);
 
-      // TODO increment score
+      // check if all cards have been removed
       this.gameOver();
     }
     else {
@@ -153,6 +157,7 @@ App.GameState = {
 
     // clear selected cards
     this.selectedCards.length = 0;
+    this.uiBlocked = false;
   },
   matchPattern: function(selectedCards) {
     return (selectedCards[0].data.pattern === selectedCards[1].data.pattern);
