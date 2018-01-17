@@ -25,7 +25,7 @@ App.PreloadState = {
     this.load.image('text_timeup', '/assets/images/hud/text_timeup.png');
   },
   create: function() {
-    //this.game.state.start('GameState');
-    this.game.state.start('CompleteState', true, false, 5);
+    this.game.state.start('GameState');
+    //this.game.state.start('CompleteState', true, false, 50);
   }
 };

@@ -22,7 +22,8 @@ App.CompleteState = {
 
     var text_number;
     numbers_score.forEach(function(item, index){
-      text_number = this.add.sprite(this.game.world.width / 2 + 50, this.game.world.height / 2 + 70, 'text_' + item);
+      //text_number = this.add.sprite(this.game.world.width / 2 + 50, this.game.world.height / 2 + 70, 'text_' + item);
+      text_number = this.add.sprite(0, 0, 'text_' + item).alignTo(text_score, Phaser.RIGHT_CENTER, index * 42);
     }, this);
   },
   update: function() {
