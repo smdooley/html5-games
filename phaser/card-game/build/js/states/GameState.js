@@ -12,19 +12,27 @@ App.GameState = {
     this.GRID_COLUMNS = 3;
 
     this.deck = [10,12,24,36,38,50,10,12,24,36,38,50];
-
+    this.selectedCards = [];
     this.score = 0;
   },
   create: function() {
     this.cards = this.add.group();
+    this.scores = this.add.group();
+
+    this.createUI();
 
     this.shuffle(this.deck);
     this.deal();
-
-    this.selectedCards = [];
   },
   update: function() {
 
+  },
+  createUI: function() {
+    this.text_score_small = this.add.sprite(0, 0, 'text_score_small');
+    this.text_dots_small = this.add.sprite(0, 0, 'text_dots_small').alignTo(this.text_score_small, Phaser.RIGHT_CENTER, 0);
+    //this.text_score = this.add.sprite(0, 0, 'text_' + this.score + '_small').alignTo(this.text_dots_small, Phaser.RIGHT_CENTER, 0);
+
+    this.updateScore(this.score);
   },
   shuffle: function(array) {
     var counter = array.length, temp, index;
@@ -123,7 +131,8 @@ App.GameState = {
       }, this);
 
       //increment score
-      this.score++;
+      //this.score++;
+      this.updateScore(10);
 
       // check if all cards have been removed
       this.gameOver();
@@ -171,5 +180,23 @@ App.GameState = {
     if(this.cards.countLiving() === 0) {
       this.game.state.start('CompleteState', true, false, this.score);
     }
+  },
+  updateScore: function(value) {
+
+    this.scores.removeAll();
+    this.score += value;
+
+    var score_numbers = this.score
+      .toString()
+      .split('')
+      .map(function(item, index){
+        return parseInt(item);
+      });
+
+    var text_number;
+    score_numbers.forEach(function(item, index){
+      text_number = this.add.sprite(0, 0, 'text_' + item + '_small').alignTo(this.text_dots_small, Phaser.RIGHT_CENTER, index * 25);
+      this.scores.add(text_number);
+    }, this);
   }
 };

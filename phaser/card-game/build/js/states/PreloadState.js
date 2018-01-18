@@ -18,10 +18,24 @@ App.PreloadState = {
     this.load.image('text_8', '/assets/images/hud/text_8.png');
     this.load.image('text_9', '/assets/images/hud/text_9.png');
 
+    this.load.image('text_0_small', '/assets/images/hud/text_0_small.png');
+    this.load.image('text_1_small', '/assets/images/hud/text_1_small.png');
+    this.load.image('text_2_small', '/assets/images/hud/text_2_small.png');
+    this.load.image('text_3_small', '/assets/images/hud/text_3_small.png');
+    this.load.image('text_4_small', '/assets/images/hud/text_4_small.png');
+    this.load.image('text_5_small', '/assets/images/hud/text_5_small.png');
+    this.load.image('text_6_small', '/assets/images/hud/text_6_small.png');
+    this.load.image('text_7_small', '/assets/images/hud/text_7_small.png');
+    this.load.image('text_8_small', '/assets/images/hud/text_8_small.png');
+    this.load.image('text_9_small', '/assets/images/hud/text_9_small.png');
+
+    this.load.image('text_dots', '/assets/images/hud/text_dots.png');
+    this.load.image('text_dots_small', '/assets/images/hud/text_dots_small.png');
     this.load.image('text_gameover', '/assets/images/hud/text_gameover.png');
     this.load.image('text_go', '/assets/images/hud/text_go.png');
     this.load.image('text_ready', '/assets/images/hud/text_ready.png');
     this.load.image('text_score', '/assets/images/hud/text_score.png');
+    this.load.image('text_score_small', '/assets/images/hud/text_score_small.png');
     this.load.image('text_timeup', '/assets/images/hud/text_timeup.png');
   },
   create: function() {
